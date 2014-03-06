@@ -1,0 +1,7 @@
+.canvas-size {
+	position:relative; 
+	width:700px;
+	height:500px;
+	background-color:#7a7a7a; 
+	margin:70px auto 20px auto;
+}
