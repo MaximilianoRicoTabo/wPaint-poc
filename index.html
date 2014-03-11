@@ -32,16 +32,95 @@
 </head>
 <body>
 	<div id="wPaint" class="canvas-size"></div>
+	<a href="javascript:authUser();">Hello World !</a>
 	<script>
-	$('#wPaint')
-  .wPaint({
+	
+
+//testing cliente
+var appID = 1390685807868295;
+
+
+	fbSdk();
+
+	function fbSdk(){
+	
+	  window.fbAsyncInit = function() {
+		// init the FB JS SDK
+		FB.init({
+		  appId      : appID, // App ID from the App Dashboard
+		  status     : true, // check the login status upon init?
+		  cookie     : true, // set sessions cookies to allow your server to access the session?
+		  xfbml      : true,  // parse XFBML tags on this page?
+		  oauth      : true
+		  
+		});	
+	
+	};
+
+	  // Load the SDK's source Asynchronously
+	  // Note that the debug version is being actively developed and might 
+	  // contain some type checks that are overly strict. 
+	  // Please report such bugs using the bugs tool.
+	  (function(d, debug){
+		 var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+		 if (d.getElementById(id)) {return;}
+		 js = d.createElement('script');js.id = id;js.async = true;
+		 js.src = "//connect.facebook.net/es_LA/all" + (debug ? "/debug" : "") + ".js";
+		 ref.parentNode.insertBefore(js, ref);
+	   }(document, /*debug*/ false));
+		
+	}
+
+	function checkUserIsLogged(){
+		// Check if the current user is logged in and has authorized the app
+		FB.getLoginStatus(checkLoginStatus);
+	}
+	
+	// Login in the current user via Facebook and ask for email permission
+	function authUser() {
+		FB.login(checkLoginStatus, {scope:'email'});
+	}
+	
+	function isOver18(dateString) {
+	  var today = new Date();
+	  var birthDate = new Date(dateString);
+	  var age = today.getFullYear() - birthDate.getFullYear();
+	  var m = today.getMonth() - birthDate.getMonth();
+	  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+	      age--;
+	  }
+	  return age > 17;
+}
+
+	// Check the result of the user status and display login button if necessary
+	function checkLoginStatus(response) {
+		if(response && response.status == 'connected') {
+			console.log(response.authResponse.userID);
+			FB.api("/me", {fields : 'birthday'}, function (response) {
+				var age = response.birthday;
+				alert (isOver18(age));
+			});
+		}
+	}
+	
+	function saveImg(image) {
+	/* 	POST graph.facebook.com	
+	  /{user-id}/feed?
+	    message={message}&
+	    access_token={access-token} */
+		var w=window.open('about:blank','image from canvas');
+		w.document.write("<img src='"+image+"' alt='from canvas'/>");		
+ 
+  }
+	
+	$('#wPaint').wPaint({
     path: 'js/wPaint/', //The path where the plugin was placed
     mode: 'Pencil', // drawing mode - Rectangle, Ellipse, Line, Pencil, Eraser
-    lineWidthMin: '0', // line width min for select drop down
+    lineWidthMin: '-1', // line width min for select drop down
     lineWidthMax: '10', // line widh max for select drop down
-    lineWidth: '2', // starting line width
-    fillStyle: '#FFFFFF', // starting fill style
-    strokeStyle: '#FFFF00', // start stroke style
+    lineWidth: '10', // starting line width
+    fillStyle: '#FFFF00', // starting fill style
+    strokeStyle: '#FFFFFF', // start stroke style */
     fontSizeMin: '8', // min font size in px
     fontSizeMax: '20', // max font size in px
     fontSize: '12', // current font size for text input
@@ -51,7 +130,7 @@
     fontTypeItalic: false, // text input italic enable/disable
     fontTypeUnderline: false, // text input italic enable/disable
     //image                : null,             // preload image - base64 encoded data
-    bg: "https://scontent-b-atl.xx.fbcdn.net/hphotos-prn2/t1/s526x395/1656107_1388289691443640_255872955_n.jpg", //The bg image path or color
+    bg: "images/inaki.jpg", //The bg image path or color
     drawDown: null, // function to call when start a draw
     drawMove: null, // function to call during a draw
     drawUp: null, // function to call at end of draw
@@ -62,6 +141,7 @@
     menuOrientation: 'horizontal', // orinetation of menu (horizontal, vertical)
     menuOffsetLeft: 60,
     menuOffsetTop: -50, // offset for menu (top)
+    saveImg: saveImg,
     menuTitles: { // icon titles, replace any of the values to customize
       'undo': 'deshacer',
       'redo': 'redo',
